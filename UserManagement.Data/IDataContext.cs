@@ -1,32 +1,40 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using UserManagement.Models;
 
 namespace UserManagement.Data;
 
 public interface IDataContext
 {
+
     /// <summary>
-    /// Get a list of items
+    /// Get all entities of type <typeparamref name="TEntity"/>.
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <returns></returns>
     IQueryable<TEntity> GetAll<TEntity>() where TEntity : class;
 
     /// <summary>
-    /// Create a new item
+    /// Create a new entity.
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="entity"></param>
-    /// <returns></returns>
     void Create<TEntity>(TEntity entity) where TEntity : class;
 
     /// <summary>
-    /// Uodate an existing item matching the ID
+    /// Update an existing entity.
     /// </summary>
-    /// <typeparam name="TEntity"></typeparam>
-    /// <param name="entity"></param>
-    /// <returns></returns>
     void Update<TEntity>(TEntity entity) where TEntity : class;
 
+    /// <summary>
+    /// Delete an entity.
+    /// </summary>
     void Delete<TEntity>(TEntity entity) where TEntity : class;
+
+    
+    /// <summary>
+    /// User action logs (DbSet).
+    /// </summary>
+    DbSet<UserAction> UserActions { get; set; }
+
+    /// <summary>
+    /// Record a user action (e.g. Created, Edited, Deleted).
+    /// </summary>
+    void LogAction(UserAction action);
 }

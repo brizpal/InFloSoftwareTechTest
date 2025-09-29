@@ -1,4 +1,12 @@
 ﻿@model UserManagement.Web.Models.Users.UserListViewModel
+@{
+    bool? isActive = null;
+    if (Context.Request.Query.ContainsKey("isActive") &&
+        bool.TryParse(Context.Request.Query["isActive"], out var parsed))
+    {
+        isActive = parsed;
+    }
+}
 
 <h2>User List</h2>
 
@@ -10,6 +18,7 @@
                 <th>Forename</th>
                 <th>Surname</th>
                 <th>Email</th>
+                <th>Date of Birth</th>
                 <th>Account Active</th>
                 <th style="width: 1px;"></th>
             </tr>
@@ -31,6 +40,9 @@
                         @item.Email
                     </td>
                     <td>
+                        @item.DateOfBirth
+                    </td>
+                    <td>
                         @(item.IsActive ? "Yes" : "No")
                     </td>
                     <td>
@@ -39,9 +51,9 @@
                                 Actions
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnToggleActions">
-                                <li><a class="dropdown-item" href="#">View</a></li>
-                                <li><a class="dropdown-item" href="#">Edit</a></li>
-                                <li><a class="dropdown-item" href="#">Delete</a></li>
+                                <li><a asp-action="Details" asp-route-id="@item.Id" class="dropdown-item">View</a></li>
+                                <li><a asp-action="Edit" asp-route-id="@item.Id" class="dropdown-item">Edit</a></li>
+                                <li><a asp-action="Delete" asp-route-id="@item.Id" class="dropdown-item">Delete</a></li>
                             </ul>
                         </div>
                     </td>
@@ -53,12 +65,15 @@
 
 <div>
     <div class="btn-group" role="group">
-        <a asp-controller="Users" asp-action="List" class="btn btn-default">Show All</a>
-        <a href="#" class="btn btn-default">Active Only</a>
-        <a href="#" class="btn btn-default">Non Active</a>
+        <a asp-action="Index" asp-route-isActive=""
+           class="btn @(isActive == null ? "btn-primary" : "btn-outline-primary")">Show All</a>
+        <a asp-action="Index" asp-route-isActive="true"
+           class="btn @(isActive == true ? "btn-primary" : "btn-outline-primary")">Active Only</a>
+        <a asp-action="Index" asp-route-isActive="false"
+           class="btn @(isActive == false ? "btn-primary" : "btn-outline-primary")">Non Active</a>
     </div>
 
-    <a href="#" class="btn btn-primary float-end">
+    <a asp-controller="Users" asp-action="Create" class="btn btn-primary float-end">
         Add User
     </a>
 </div>

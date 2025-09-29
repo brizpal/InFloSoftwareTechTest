@@ -1,0 +1,29 @@
+﻿@model UserManagement.Web.Models.Users.UserDetailsViewModel
+
+<h2>User Details</h2>
+
+<p>Full Name: @Model.User.Forename @Model.User.Surname</p>
+<p>Email: @Model.User.Email</p>
+<p>Date of Birth: @Model.User.DateOfBirth.ToString("dd-MM-yyyy")</p>
+<p>Status: @(Model.User.IsActive ? "Active" : "Inactive")</p>
+
+<h3>Action History</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Action</th>
+            <th>Date</th>
+            <th>Performed By</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var action in Model.Actions)
+        {
+            <tr>
+                <td>@action.ActionType</td>
+                <td>@action.ActionDate.ToString("dd-MM-yyyy HH:mm")</td>
+                <td>@action.PerformedBy</td>
+            </tr>
+        }
+    </tbody>
+</table>

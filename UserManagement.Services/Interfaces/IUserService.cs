@@ -3,13 +3,31 @@ using UserManagement.Models;
 
 namespace UserManagement.Services.Domain.Interfaces;
 
-public interface IUserService 
+public interface IUserService
 {
     /// <summary>
-    /// Return users by active state
+    /// Get all users, optionally filtered by active state.
     /// </summary>
-    /// <param name="isActive"></param>
-    /// <returns></returns>
-    IEnumerable<User> FilterByActive(bool isActive);
-    IEnumerable<User> GetAll();
+    IEnumerable<User> GetUsers(bool? isActive = null);
+
+    /// <summary>
+    /// Add a new user.
+    /// </summary>
+    void AddUser(User user);
+
+    /// <summary>
+    /// Update an existing user.
+    /// </summary>
+    void UpdateUser(User user);
+
+    /// <summary>
+    /// Delete an existing user.
+    /// </summary>
+    void DeleteUser(User user);
+
+    /// <summary>
+    /// Get all actions performed for a given user.
+    /// </summary>
+    IEnumerable<UserAction> GetUserActions(int userId);
 }
+

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UserManagement.Models;
 
 namespace UserManagement.Services.Domain.Interfaces;
@@ -29,5 +30,7 @@ public interface IUserService
     /// Get all actions performed for a given user.
     /// </summary>
     IEnumerable<UserAction> GetUserActions(int userId);
+
+    IQueryable<UserAction> GetAllUserActions();
 }
 

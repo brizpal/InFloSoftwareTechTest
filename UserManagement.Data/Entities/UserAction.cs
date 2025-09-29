@@ -9,4 +9,6 @@ public class UserAction
     public required string ActionType { get; set; }
     public DateTime ActionDate { get; set; }
     public string? PerformedBy { get; set; }
+
+    public User? User { get; set; }
 }

@@ -1,0 +1,33 @@
+﻿@model UserManagement.Web.Models.Users.LogsViewModel
+
+<h2>Application Logs</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Action Type</th>
+                <th>Date</th>
+                <th>Performed By</th>
+                <th>Target User</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model.Entries)
+            {
+                <tr>
+                    <td>
+                        <a asp-controller="Logs" asp-action="Details" asp-route-id="@log.Id">
+                            @log.Id
+                        </a>
+                    </td>
+                    <td>@log.ActionType</td>
+                    <td>@log.ActionDate.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td>@log.PerformedBy</td>
+                    <td>@log.TargetUser</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 using UserManagement.Data;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
@@ -72,6 +73,13 @@ public class UserService : IUserService
                           .Where(a => a.UserId == userId)
                           .OrderByDescending(a => a.ActionDate)
                           .ToList();
+    }
+
+    public IQueryable<UserAction> GetAllUserActions()
+    {
+        return _dataAccess.GetAll<UserAction>()
+            .Include(a => a.User)
+            .OrderByDescending(a => a.ActionDate);
     }
 }
 

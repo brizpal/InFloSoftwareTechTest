@@ -1,27 +1,47 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Westwind.AspNetCore.Markdown;
+using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using UserManagement.Data.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services
-    .AddDataAccess()
-    .AddDomainServices()
-    .AddMarkdown()
-    .AddControllersWithViews();
+// Add controllers
+builder.Services.AddControllers();
+
+// Add repositories and services
+builder.Services.AddDataAccess();       // UserRepository
+builder.Services.AddDomainServices();   // IUserService -> UserService
+
+// Add Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "UserManagement API",
+        Version = "v1",
+        Description = "API for managing users"
+    });
+});
 
 var app = builder.Build();
 
-app.UseMarkdown();
+// Swagger UI
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserManagement API V1");
+        c.RoutePrefix = string.Empty; // Swagger at root
+    });
+}
 
-app.UseHsts();
 app.UseHttpsRedirection();
-app.UseStaticFiles();
 
-app.UseRouting();
 app.UseAuthorization();
 
-app.MapDefaultControllerRoute();
+app.MapControllers();
 
 app.Run();

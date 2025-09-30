@@ -1,7 +1,6 @@
-﻿using UserManagement.Services.Domain.Implementations;
-using UserManagement.Services.Domain.Interfaces;
-
-namespace Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using UserManagement.Services;
+using UserManagement.Core.Interfaces;
 
 public static class ServiceCollectionExtensions
 {

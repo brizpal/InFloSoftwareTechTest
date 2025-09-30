@@ -1,14 +1,9 @@
-﻿using System;
-
-namespace UserManagement.Models;
-
-public class UserAction
+﻿public class UserAction
 {
     public int Id { get; set; }
     public long UserId { get; set; }  
     public required string ActionType { get; set; }
     public DateTime ActionDate { get; set; }
     public string? PerformedBy { get; set; }
-
     public User? User { get; set; }
 }

@@ -1,20 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using UserManagement.Models;
+using System.Threading.Tasks;
 
-
-namespace UserManagement.Data;
-
-public class DataContext : DbContext, IDataContext
+namespace UserManagement.Data.Repositories
 {
-    public DataContext() => Database.EnsureCreated();
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseInMemoryDatabase("UserManagement.Data.DataContext");
-
-    protected override void OnModelCreating(ModelBuilder model)
-        => model.Entity<User>().HasData(new[]
+    public class UserRepository
+    {
+        private readonly List<User> _users = new()
         {
             new User { Id = 1, Forename = "Peter", Surname = "Loew", Email = "ploew@example.com",DateOfBirth = new DateOnly(2000, 2, 10), IsActive = true },
             new User { Id = 2, Forename = "Benjamin Franklin", Surname = "Gates", Email = "bfgates@example.com",DateOfBirth = new DateOnly(2001, 2, 10),  IsActive = true },
@@ -27,36 +20,39 @@ public class DataContext : DbContext, IDataContext
             new User { Id = 9, Forename = "Damon", Surname = "Macready", Email = "dmacready@example.com",DateOfBirth = new DateOnly(1998, 7, 8),  IsActive = false },
             new User { Id = 10, Forename = "Johnny", Surname = "Blaze", Email = "jblaze@example.com",DateOfBirth = new DateOnly(1999, 8, 9),  IsActive = true },
             new User { Id = 11, Forename = "Robin", Surname = "Feld", Email = "rfeld@example.com",DateOfBirth = new DateOnly(1997, 4, 6),  IsActive = true },
-        });
+        };
 
-    public DbSet<User>? Users { get; set; }
+        public Task<List<User>> GetAllAsync() => Task.FromResult(_users);
 
-    public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class
-        => base.Set<TEntity>();
+        public Task<User?> GetByIdAsync(int id) =>
+            Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
 
-    public void Create<TEntity>(TEntity entity) where TEntity : class
-    {
-        base.Add(entity);
-        SaveChanges();
-    }
+        public Task AddAsync(User user)
+        {
+            user.Id = _users.Any() ? _users.Max(u => u.Id) + 1 : 1;
+            _users.Add(user);
+            return Task.CompletedTask;
+        }
 
-    public new void Update<TEntity>(TEntity entity) where TEntity : class
-    {
-        base.Update(entity);
-        SaveChanges();
-    }
+        public Task UpdateAsync(User user)
+        {
+            var existing = _users.FirstOrDefault(u => u.Id == user.Id);
+            if (existing != null)
+            {
+                existing.Forename = user.Forename;
+                existing.Surname = user.Surname;
+                existing.Email = user.Email;
+                existing.DateOfBirth = user.DateOfBirth;
+                existing.IsActive = user.IsActive;
+            }
+            return Task.CompletedTask;
+        }
 
-    public void Delete<TEntity>(TEntity entity) where TEntity : class
-    {
-        base.Remove(entity);
-        SaveChanges();
-    }
-
-    public DbSet<UserAction> UserActions { get; set; }
-
-    public void LogAction(UserAction action)
-    {
-        UserActions.Add(action);
-        SaveChanges();
+        public Task DeleteAsync(int id)
+        {
+            var user = _users.FirstOrDefault(u => u.Id == id);
+            if (user != null) _users.Remove(user);
+            return Task.CompletedTask;
+        }
     }
 }

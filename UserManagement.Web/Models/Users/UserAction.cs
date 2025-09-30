@@ -1,5 +1,4 @@
 ﻿using System;
-using UserManagement.Models;
 
 namespace UserManagement.Web.Models.Users;
 

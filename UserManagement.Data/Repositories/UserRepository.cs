@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UserManagement.Core.Interfaces;
 
 namespace UserManagement.Data.Repositories
 {
-    public class UserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly List<User> _users = new()
         {
@@ -22,14 +23,12 @@ namespace UserManagement.Data.Repositories
             new User { Id = 11, Forename = "Robin", Surname = "Feld", Email = "rfeld@example.com",DateOfBirth = new DateOnly(1997, 4, 6),  IsActive = true },
         };
 
-        public Task<List<User>> GetAllAsync() => Task.FromResult(_users);
+        public Task<List<User>> GetAllAsync() => Task.FromResult(_users.ToList());
 
-        public Task<User?> GetByIdAsync(int id) =>
-            Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
+        public Task<User?> GetByIdAsync(int id) => Task.FromResult(_users.FirstOrDefault(u => u.Id == id));
 
         public Task AddAsync(User user)
         {
-            user.Id = _users.Any() ? _users.Max(u => u.Id) + 1 : 1;
             _users.Add(user);
             return Task.CompletedTask;
         }
@@ -51,7 +50,8 @@ namespace UserManagement.Data.Repositories
         public Task DeleteAsync(int id)
         {
             var user = _users.FirstOrDefault(u => u.Id == id);
-            if (user != null) _users.Remove(user);
+            if (user != null)
+                _users.Remove(user);
             return Task.CompletedTask;
         }
     }

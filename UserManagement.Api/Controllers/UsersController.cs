@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using UserManagement.Core.DTOs;
 using UserManagement.Core.Interfaces;
 
-namespace UserManagement.API.Controllers
+namespace UserManagement.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

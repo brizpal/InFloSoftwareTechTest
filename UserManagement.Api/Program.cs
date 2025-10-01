@@ -4,12 +4,20 @@ using UserManagement.Data.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-
-
-builder.Services.AddDataAccess(); 
+builder.Services.AddDataAccess();
 builder.Services.AddDomainServices();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 
+// Add Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -22,6 +30,11 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+
+app.UseCors();
+app.UseHttpsRedirection();
+app.UseAuthorization();
+
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -29,8 +42,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
 });
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

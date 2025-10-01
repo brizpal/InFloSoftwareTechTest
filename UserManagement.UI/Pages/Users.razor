@@ -1,0 +1,130 @@
+﻿@page "/"
+@inject UserApiService UserService
+@using UserManagement.UI.Models
+@using Microsoft.AspNetCore.Components.Forms
+@using UserManagement.UI.Services
+
+<h3>Users</h3>
+
+<button class="btn btn-primary mb-2" @onclick="ShowAddUserForm">Add User</button>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Active</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Forename @user.Surname</td>
+                    <td>@user.Email</td>
+                    <td>@user.IsActive</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" @onclick="() => EditUser(user)">Edit</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => DeleteUser(user.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@if (showForm)
+{
+    <EditForm Model="editUser" OnValidSubmit="SaveUser">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="mb-2">
+            <label>Forename:</label>
+            <InputText @bind-Value="editUser.Forename" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <label>Surname:</label>
+            <InputText @bind-Value="editUser.Surname" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <label>Email:</label>
+            <InputText @bind-Value="editUser.Email" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <label>Date of Birth:</label>
+            <InputDate @bind-Value="editUser.DateOfBirth" class="form-control" />
+        </div>
+        <div class="mb-2">
+            <label>Active:</label>
+            <InputCheckbox @bind-Value="editUser.IsActive" class="form-check-input" />
+        </div>
+        <button type="submit" class="btn btn-success">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    private List<UserDto>? users;
+    private bool showForm = false;
+    private UserDto editUser = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllUsersAsync();
+    }
+
+    private void ShowAddUserForm()
+    {
+        editUser = new UserDto { IsActive = true };
+        showForm = true;
+    }
+
+    private void EditUser(UserDto user)
+    {
+        editUser = new UserDto
+        {
+            Id = user.Id,
+            Forename = user.Forename,
+            Surname = user.Surname,
+            Email = user.Email,
+            DateOfBirth = user.DateOfBirth,
+            IsActive = user.IsActive
+        };
+        showForm = true;
+    }
+
+    private async Task SaveUser()
+    {
+        if (editUser.Id == 0)
+        {
+            await UserService.CreateUserAsync(editUser);
+        }
+        else
+        {
+            await UserService.UpdateUserAsync(editUser.Id, editUser);
+        }
+
+        users = await UserService.GetAllUsersAsync();
+        showForm = false;
+    }
+
+    private void Cancel()
+    {
+        showForm = false;
+    }
+
+    private async Task DeleteUser(int id)
+    {
+        await UserService.DeleteUserAsync(id);
+        users = await UserService.GetAllUsersAsync();
+    }
+}
